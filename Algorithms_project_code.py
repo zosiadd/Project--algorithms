@@ -1,97 +1,97 @@
 class ImageGraph:
-    # Inicjalizacja grafu dla obrazu.
+    # Graph initialization for image
     def __init__(self, image):
-        self.image = image  # Przypisanie obrazu do atrybutu instancji klasy
-        self.n = len(image)  # Rozmiar obrazu (zakładamy, że jest to tablica kwadratowa n x n)
-        self.edges = set()  # Zbiór przechowujący krawędzie grafu, eliminujący duplikaty połączeń
-        self.vertices = {}  # Słownik przechowujący wierzchołki grafu i ich atrybuty
-        self.build_graph()  # Wywołanie metody budującej graf na podstawie obrazu
+        self.image = image  # Assigning an image to an attribute of a class instance
+        self.n = len(image)  # The size of the image (we assume that it is an n x n square array)
+        self.edges = set()  # A collection that stores the edges of a graph, eliminating duplicate connections
+        self.vertices = {}  # A dictionary storing the vertices of a graph and their attributes
+        self.build_graph()  # Calling a method that builds a graph from an image
 
-    # Dodanie wierzchołka do grafu - każdy wierzchołek jest identyfikowany przez współrzędne (i, j) na obrazie
+    # Adding a vertex to a graph - each vertex is identified by coordinates (i, j) in the image
     def add_vertex(self, vertex_id):
-        self.vertices[vertex_id] = { "color": 0}  # Inicjalizacja wierzchołka z domyślnym kolorem 0 (brak przypisanego komponentu)
+        self.vertices[vertex_id] = { "color": 0}  # Initialize vertex with default color 0 (no assigned component)
 
-    # Dodanie krawędzi do grafu - krawędzie reprezentują sąsiedztwo między dwoma czarnymi pikselami
+    # Adding edges to the graph - edges represent the neighborhood between two black pixels
     def add_edge(self, u, v):
         if (v, u) not in self.edges and (u, v) not in self.edges:
-            self.edges.add((u, v))  # Dodanie krawędzi między wierzchołkami
+            self.edges.add((u, v))  # Adding edges between vertices
 
-    # Funkcja buduje graf sąsiedztwa dla czarnych pikseli w obrazie rastrowym
+    # Function builds a neighborhood graph for black pixels in a raster image
     def build_graph(self):
-        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # Sąsiedztwo 4-kierunkowe (góra, dół, lewo, prawo)
-        for i in range(self.n):  # Iteracja przez wiersze obrazu
-            for j in range(self.n):  # Iteracja przez kolumny obrazu
-                if self.image[i][j] == 1:  # Jeśli piksel jest czarny:
-                    vertex_id = (i, j)  # Współrzędne pikselu jako identyfikator wierzchołka
-                    self.add_vertex(vertex_id)  # Dodanie wierzchołka do grafu
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # 4-way neighborhood (up, down, left, right)
+        for i in range(self.n):  # Iteration through the lines of the image
+            for j in range(self.n):  # Iteration through image columns
+                if self.image[i][j] == 1:  # If the pixel is black:
+                    vertex_id = (i, j)  # Pixel coordinates as vertex identifier
+                    self.add_vertex(vertex_id)  # Adding a vertex to a graph
 
-                    for di, dj in directions:  # Iteracja przez możliwe kierunki sąsiedztwa
-                        ni, nj = i + di, j + dj  # Obliczenie współrzędnych sąsiada
+                    for di, dj in directions:  # Iteration through possible neighborhood directions
+                        ni, nj = i + di, j + dj  # Calculating the coordinates of a neighbora
                         if 0 <= ni < self.n and 0 <= nj < self.n and self.image[ni][nj] == 1:
-                            # Jeśli sąsiad jest w granicach obrazu i jest czarny:
-                            self.add_edge(vertex_id, (ni, nj))  # Dodanie krawędzi między wierzchołkami
+                            # If the neighbor is within the image boundaries and is black:
+                            self.add_edge(vertex_id, (ni, nj))  # Adding edges between vertices
 
-    # Funkcja identyfikuje rozłączne komponenty grafu i przypisuje każdemu komponentowi unikalny identyfikator
+    # The function identifies the disjoint components of the graph and assigns a unique identifier to each component
     def find_connected_components(self):
-        visited = set()  # Zbiór odwiedzonych wierzchołków
-        component_id = 1  # Identyfikator aktualnego komponentu
+        visited = set()  # Set of visited vertices
+        component_id = 1  # Identifier of the current component
 
         def dfs(vertex):
-            stack = [vertex]  # Stos do przechowywania wierzchołków do odwiedzenia
+            stack = [vertex]  # Stack to store vertices to visit
             while stack:
-                current = stack.pop()  # Pobierz wierzchołek ze stosu
-                if current not in visited:  # Jeśli wierzchołek nie został jeszcze odwiedzony:
-                    visited.add(current)  # Oznacz go jako odwiedzonego
-                    self.vertices[current]["color"] = component_id  # Przypisz identyfikator komponentu
+                current = stack.pop()  # Get a vertex from the stack
+                if current not in visited:  # If the vertex has not yet been visited:
+                    visited.add(current)  # Mark it as visited
+                    self.vertices[current]["color"] = component_id  # Assign a component ID
                     neighbors = [v for u, v in self.edges if u == current] + \
                                 [u for u, v in self.edges if v == current]
-                    # Znalezienie wszystkich sąsiadów połączonych krawędzią z aktualnym wierzchołkiem
-                    for neighbor in neighbors:  # Dodanie sąsiadów do stosu tylko wtedy, gdy nie zostały jeszcze odwiedzone
+                    # Finding all neighbors connected by an edge to the current vertex
+                    for neighbor in neighbors:  # Adding neighbors to the stack only if they have not yet been visited
                         if neighbor not in visited:
                             stack.append(neighbor)
 
-        for vertex in self.vertices:  # Iteracja przez wszystkie wierzchołki grafu
-            if vertex not in visited:  # Jeśli wierzchołek nie został odwiedzony:
-                dfs(vertex)  # Wywołaj DFS dla nowego komponentu
-                component_id += 1  # Zwiększ identyfikator komponentu
+        for vertex in self.vertices:  # Iteration through all vertices of the graph
+            if vertex not in visited:  # If the vertex has not been visited:
+                dfs(vertex)  # Call DFS for a new component
+                component_id += 1  # Increase the component identifier
 
-        return component_id - 1  # Zwróć liczbę rozłącznych komponentów
+        return component_id - 1  # Return the number of disconnected components
 
-    # Funkcja get_colored_image tworzy obraz z identyfikatorami grup dla czarnych pikseli
+    # Function get_colored_image creates image with group component identifier for black pixels
     def get_colored_image(self):
-        colored_image = [[0 for _ in range(self.n)] for _ in range(self.n)]  # Pusta tablica n x n
-        # Inicjalizacja pustej tablicy n x n, wypełnionej wartościami 0 (białe piksele)
-        for (i, j), attributes in self.vertices.items():  # Iteracja przez wierzchołki i ich atrybuty
-            colored_image[i][j] = attributes["color"]  # Przypisanie koloru (identyfikatora komponentu)
-        return colored_image  # Zwrócenie kolorowego obrazu
+        colored_image = [[0 for _ in range(self.n)] for _ in range(self.n)]  # Blank array n x n
+        # Initialization of an empty n x n array, filled with 0 values (white pixels)
+        for (i, j), attributes in self.vertices.items():  # Iteration through vertices and their attributes
+            colored_image[i][j] = attributes["color"]  # Assigning a color component identifier
+        return colored_image  # Returning a color image
 
-    # Funkcja wyświetlająca obraz z przypisanymi identyfikatorami grup
+    # A function that displays an image with assigned group component identifier
     def display_colored_image(self):
         print("Obraz z identyfikatorami grup:")
-        for row in self.get_colored_image():     # Iteracja przez kazdy wiersz zwrocony przez metode get_colored_image()
-            print(" ".join(map(str, row)))       # Konwersja każdego elementu z listy row na tekst,łączenie elementów w string oddzielony spacjami
+        for row in self.get_colored_image():     # Iterate through each row returned by the get_colored_image() method
+            print(" ".join(map(str, row)))       # Convert each element in the row list to text,concatenate elements into a string separated by spaces
 
-# Funkcja odpowiedzialna za pobranie danych od uzytkownika
+# Function responsible for retrieving data from the user
 def get_user_image():
     try:
-        n = int(input("Podaj rozmiar macierzy (n x n): "))
-        print("Wprowadź wiersze macierzy, używając 0 dla czarnych pikseli i 1 dla białych pikseli.")
-        image = []                         # Inicjalizacja postej listy, ktora bedzie przechowywać wprowadzone wiersze macierzy
-        for i in range(n):                 # Rozpoczecie petli iterujacej n razy, czyli tyle razy ile wierszy macierzy wybral uzytkownik
-            row = input(f"Wiersz {i + 1}: ")     # Wprowadzenie dla kazdego wiersza cyfr reprezentujacych wiersz macierzy
-            if len(row) != n or not all(c in '01' for c in row):     # Sprawdzenie czy dlugosc wprowadzonego wiersza = n i czy jest cyfra 1 V 0
-                print("Błąd: Wiersz musi mieć dokładnie n znaków '0' lub '1'.")
-                return None           # Zwrocenie bledu w przypadku nieprawidlowych danych
-            image.append([int(c) for c in row])     # Konwertuje każdy znak '0' lub '1' na liczbę całkowitą i dodaje listę liczb do listy image
-        return image    # Zwrocenie dwuwymiarowej listy image reprezentujacej macierz
-    except ValueError:          # Sprawdzenie czy podczas konwersji danych nie pojawil sie blad
-        print("Błąd: Proszę wprowadzić poprawną liczbę całkowitą.")
+        n = int(input("Enter the size of the matrix (n x n): "))
+        print("Enter matrix rows, using 0 for black pixels and 1 for white pixels.")
+        image = []                         # Initialization of the post list, which will store the entered matrix rows
+        for i in range(n):                 # Start the loop iterating n times, that is, as many times as many rows of the matrix selected by the user
+            row = input(f"Row  {i + 1}: ")     # Input for each row of digits representing the matrix row
+            if len(row) != n or not all(c in '01' for c in row):     # Checking if the length of the entered line = n and if there is a digit 1 or 0
+                print("Error: A row must have exactly n characters '0' or '1'.")
+                return None           # Return error in case of invalid data
+            image.append([int(c) for c in row])     # Converts each character ‘0’ or ‘1’ to an integer and adds a list of numbers to the image liste
+        return image    # Return a two-dimensional image list representing the matrix
+    except ValueError:          # Checking for an error during data conversion
+        print("Error: Please enter the correct integer.")
         return None
 
-# Funkcja main() pozwala uzytkownikowi zadecydowac czy chce on uzyc domyslnej macierzy, czy wprowadzic wlasna
+# The main() function allows the user to decide whether he wants to use the default matrix or enter his own
 def main():
-    use_default = input("Czy chcesz użyć domyślnej macierzy? (tak/nie): ").strip().lower()
-    if use_default == 'tak':
+    use_default = input("Do you want to use the default matrix? (yes/no): ").strip().lower()
+    if use_default == 'yes':
         image = [
             [0, 1, 0, 0],
             [1, 1, 0, 1],
@@ -102,7 +102,7 @@ def main():
     else:
         image = get_user_image()
         if image is None:
-            print("Nie udało się wczytać macierzy. Używam domyślnej macierzy.")
+            print("Failed to load the matrix. I am using the default matrix.")
             image = [
                 [0, 1, 0, 0],
                 [1, 1, 0, 1],
@@ -111,17 +111,17 @@ def main():
             ]
 
 
-    graph = ImageGraph(image)  # Tworzymy obiekt klasy ImageGraph, przekazując mu obraz
-    num_components = graph.find_connected_components()  # Znajdujemy liczbę rozłącznych komponentów (czarnych plam) w grafie
-    colored_image = graph.get_colored_image() # Wywołanie metody get_colored_image() obiektu graph zwracajacej macierz z identyfikatorami poszczególnych plam
+    graph = ImageGraph(image)  # Create an object of class ImageGraph, passing it an image
+    num_components = graph.find_connected_components()  # We find the number of disconnected components (black spots) in the graph
+    colored_image = graph.get_colored_image() # Calling the get_colored_image() method of the graph object returning an array with the identifiers of each stain
 
-    print(f"Liczba rozłącznych białych plam: {num_components}") # Wypisanie na ekranie liczby znalezionych rozlacznych bialych plam, korzystajac z wartosci przechowywanej w zmiennej num_components
-    print("Obraz z identyfikatorami plam:")  # Wypisanie nagłówka informujacego, ze poniżej znajduje sie obraz z identyfikatorami plam
-    for row in colored_image:                # Pętla for iterująca po kazdym wierszu w macierzy colored_image
-        print(' '.join(map(str, row)))       # Konwersja kazdego elementu wiersza row na łańcuch znaków za pomocą funkcji map(str, row),
-                                             # następnie łączy te elementy w jeden łańcuch, oddzielając je spacjami, i wypisuje wynik na ekranie
+    print(f"Number of disjointed white spots: {num_components}") # Print on the screen the number of distributed white spots found, using the value stored in the num_components variable
+    print("Image with stain identifiers::")  # Writing out a headline indicating that below is an image with stain identifiers
+    for row in colored_image:                # A for loop iterating over each row in the colored_image array
+        print(' '.join(map(str, row)))       # Convert each row element row to a character string using the map(str, row) function
+                                             # then combines these elements into a single string, separating them with spaces, and prints the result on the screen
 
-# Sprawdzenie czy skrypt jest uruchamiany bezpośrednio, a nie importowany jako moduł
+# Checking if the script is run directly and not imported as a module
 
 if __name__ == "__main__":
-    main()   # Wywołanie funkcji main(), zawierajacej glowna logike programu
+    main()   # Calling the main() function, which contains the main logic of the program
