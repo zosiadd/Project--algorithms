@@ -14,9 +14,9 @@ Each black pixel is assigned a unique identifier corresponding to its region, cr
 
 Example:
 
-<div align="left">
+
 ![image](https://github.com/user-attachments/assets/3f5dd0c4-8cf7-4d9d-bd9b-2d5e78cb9cfb)
-</div>
+
 
 <p align="justify"> 
 Output:
