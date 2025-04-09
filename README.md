@@ -20,6 +20,7 @@ Example:
 
 <p align="justify"> 
 Output:
+  
 Number of distinct black regions
 
 Matrix with labeled regions (black pixels marked with region IDs, white pixels as 0)
