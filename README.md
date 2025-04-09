@@ -27,5 +27,5 @@ Matrix with labeled regions (black pixels marked with region IDs, white pixels a
 
 The program supports both user-defined and default input matrices and gracefully handles invalid input by falling back to the default option.
 
-This project was carried out as part of student projects by: zosiadd and Aleksandra Gałczyńska
+This project was carried out as part of student projects by: [zosiadd](https://github.com/zosiadd) and Aleksandra Gałczyńska
 </p>
