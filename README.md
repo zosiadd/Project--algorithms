@@ -1,4 +1,5 @@
 # Project-algorithms
+<p align="justify"> 
 The goal of this project is to process a raster image represented as an n x n array of black and white pixels, and to identify and label all distinct black regions (connected components). The solution consists of three main steps:
 
 Graph Construction
@@ -9,20 +10,21 @@ A Depth-First Search (DFS) algorithm is used to explore the graph and detect dis
 
 Region Labeling
 Each black pixel is assigned a unique identifier corresponding to its region, creating a result matrix that visually distinguishes individual blobs.
+</p>
 
 Example:
 
-
-
+<div align="left">
 ![image](https://github.com/user-attachments/assets/3f5dd0c4-8cf7-4d9d-bd9b-2d5e78cb9cfb)
+</div>
 
-
-
-
+<p align="justify"> 
 Output:
 Number of distinct black regions
+
 Matrix with labeled regions (black pixels marked with region IDs, white pixels as 0)
 
 The program supports both user-defined and default input matrices and gracefully handles invalid input by falling back to the default option.
 
 This project was carried out as part of student projects by: zosiadd and Aleksandra Gałczyńska
+</p>
